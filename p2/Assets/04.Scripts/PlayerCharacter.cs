@@ -1,50 +1,90 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerCharacterModel : MonoBehaviour
+public class PlayerCharacter : Character
 {
-    [SerializeField] private Animator _anim;
+    public PlayerLevelSystem LevelSystem { get; private set; }
+    public PlayerStats Stats { get; private set; }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        LevelSystem = new PlayerLevelSystem(1, 0);
+        Stats = new PlayerStats(100, 100);
+
+        FollowCamera followCam = Camera.main.GetComponent<FollowCamera>();
+        followCam.SetTarget(gameObject);
+        followCam.CameraComponent.fieldOfView = 90;
+
+        _movement.MoveSpeed = 5;
+    }
+}
+
+public class PlayerLevelSystem
+{
+    public int Level { get; private set; }
+    public int Exp { get; private set; }
+    public int MaxExp { get; private set; } = 100;
+
+    public delegate void LevelChangeDelegate(int level);
+    public event LevelChangeDelegate OnLevelUp;
+
+    public delegate void ExpChangeDelegate(int exp);
+    public event ExpChangeDelegate OnExpChanged;
+
+    public PlayerLevelSystem(int level, int exp)
+    {
+        Level = level;
+        Exp = exp;
     }
 
-public class PlayerCharacter : MonoBehaviour
-{
-    public PlayerCharacterModel Model => _model;
-
-    [SerializeField] private PlayerMovement _movement;
-    [SerializeField] private PlayerCharacterModel _model;
-    [SerializeField] private GameObject _renderer;
-
-    void Update()
+    public void AddExp(int value)
     {
-        ProcessInputs();
-        RotateTowardsMouse();
-    }
+        Exp += value;
+        OnExpChanged?.Invoke(Exp);
 
-    void ProcessInputs()
-    {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-        Vector3 moveDirection = new Vector3(moveX, 0, moveZ);
-
-        if(moveDirection != Vector3.zero)
+        if (Exp >= MaxExp)
         {
-            _movement.Move(_movement.MoveSpeed * Time.deltaTime * moveDirection.normalized);
+            Exp -= MaxExp;
+            Level++;
+            OnLevelUp?.Invoke(Level);
         }
     }
+}
 
-    void RotateTowardsMouse()
+public class PlayerStats
+{
+    public int MaxLife = 100;
+    public int MaxMana = 100;
+    public int Life { get; private set; }
+    public int Mana { get; private set; }
+
+    public delegate void OnStatChanged(int value);
+    public event OnStatChanged OnLifeChanged;
+    public event OnStatChanged OnManaChanged;
+
+    public PlayerStats(int life, int mana)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, Define.GroundLayer))
-        {
-            Vector3 targetDirection = hitInfo.point - transform.position;
-            targetDirection.y = 0; // Keep the direction strictly horizontal
-            if (targetDirection != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _movement.MoveSpeed);
+        MaxLife = life;
+        MaxMana = mana;
 
-                _movement.SetForward(targetDirection);
-            }
-        }
+        Life = life;
+        Mana = mana;
+    }
+
+    public void AddLife(int value)
+    {
+        Life += value;
+
+        OnLifeChanged?.Invoke(Life);
+    }
+
+    public void AddMana(int value)
+    {
+        Mana += value;
+
+        OnManaChanged?.Invoke(Mana);
     }
 }
