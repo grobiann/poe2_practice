@@ -8,17 +8,17 @@ public class NavMeshBorderDrawer : MonoBehaviour
     [SerializeField] private MeshRenderer _borderRenderer;
     [SerializeField] private Camera _borderCamera;
 
-    public NavMeshBorderDrawer()
+    public void Draw(RenderTexture texture)
     {
         int mapSize = 128;
         Vector3 center = new Vector3(mapSize * 0.5f, 0, mapSize * 0.5f);
 
         _borderCamera.transform.position = center + new Vector3(0, 100, 0);
         _borderCamera.orthographicSize = mapSize * 0.5f;
-    }
+        _borderCamera.allowHDR = false;
+        _borderCamera.clearFlags = CameraClearFlags.SolidColor;
+        _borderCamera.backgroundColor = new Color(0, 0, 0, 0);
 
-    public void Draw(RenderTexture texture)
-    {
         NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
         Mesh mesh = CreateBorderMesh(triangulation);
         MeshFilter meshFilter = _borderRenderer.GetComponent<MeshFilter>();

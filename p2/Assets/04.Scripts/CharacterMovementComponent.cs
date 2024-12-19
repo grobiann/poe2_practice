@@ -1,10 +1,68 @@
 using System;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.EventSystems;
+
+public class CharacterMovementComponent : MonoBehaviour
+{
+    public float MoveSpeed
+    {
+        get => _movement.MaxMoveSpeed;
+        set => _movement.MaxMoveSpeed = value;
+    }
+    public Vector3 Velocity
+    {
+        get => _movement.Velocity;
+    }
+    //public float CurrentMoveSpeed => _navMeshAgent.velocity.magnitude;
+    //public Vector3 Velocity => _navMeshAgent.velocity;
+    //public Vector3 Forward { get; private set; }
+
+    //[SerializeField] private float _moveSpeed = 2.0f;
+
+    [SerializeField] private NavMeshAgent _navMeshAgent;
+
+    public ICharacterMovement Movement => _movement;
+    private ICharacterMovement _movement;
+
+    private Vector3 _desiredDirection;
+    private bool _moveByAgent;
+    private bool _moveByDirection;
+
+    public event Action OnMove = delegate { };
+    public event Action OnStop = delegate { };
+
+    private void Awake()
+    {
+        SetForward(Vector3.forward);
+
+        //Vector3 targetPosition = transform.position;
+        //targetPosition.y = GetGroundHeight(targetPosition);
+        //transform.position = targetPosition;
+
+        _movement = new MoveByNavMeshAgent(_navMeshAgent);
+    }
+
+    private void Update()
+    {
+        _movement.Update(Time.deltaTime);
+    }
+
+    public void MoveToDestination(Vector3 destination)
+    {
+        _movement.MoveToDestination(destination);
+    }
+
+    public void MoveToDirection(Vector3 direction)
+    {
+        _movement.MoveToDirection(direction);
+    }
+
+    public void SetForward(Vector3 direction)
+    {
+        //Forward = direction;
+        transform.forward = direction;
+    }
+}
 
 public interface ICharacterMovement
 {
@@ -165,65 +223,3 @@ public class MoveByNavMeshAgent : ICharacterMovement
 //        return position.y;
 //    }
 //}
-
-public class CharacterMovementComponent : MonoBehaviour
-{
-    public float MoveSpeed
-    {
-        get => _movement.MaxMoveSpeed;
-        set => _movement.MaxMoveSpeed = value;
-    }
-    public Vector3 Velocity
-    {
-        get => _movement.Velocity;
-    }
-    //public float CurrentMoveSpeed => _navMeshAgent.velocity.magnitude;
-    //public Vector3 Velocity => _navMeshAgent.velocity;
-    //public Vector3 Forward { get; private set; }
-
-    //[SerializeField] private float _moveSpeed = 2.0f;
-
-    [SerializeField] private NavMeshAgent _navMeshAgent;
-
-    public ICharacterMovement Movement => _movement;
-    private ICharacterMovement _movement;
-
-    private Vector3 _desiredDirection;
-    private bool _moveByAgent;
-    private bool _moveByDirection;
-
-    public event Action OnMove = delegate { };
-    public event Action OnStop = delegate { };
-
-    private void Awake()
-    {
-        SetForward(Vector3.forward);
-
-        //Vector3 targetPosition = transform.position;
-        //targetPosition.y = GetGroundHeight(targetPosition);
-        //transform.position = targetPosition;
-
-        _movement = new MoveByNavMeshAgent(_navMeshAgent);
-    }
-
-    private void Update()
-    {
-        _movement.Update(Time.deltaTime);
-    }
-
-    public void MoveToDestination(Vector3 destination)
-    {
-        _movement.MoveToDestination(destination);
-    }
-
-    public void MoveToDirection(Vector3 direction)
-    {
-        _movement.MoveToDirection(direction);
-    }
-
-    public void SetForward(Vector3 direction)
-    {
-        //Forward = direction;
-        transform.forward = direction;
-    }
-}

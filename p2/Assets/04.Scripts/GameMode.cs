@@ -29,12 +29,10 @@ public class GameMode
         RenderTexture mainTex = controller.renderTexture;
         mainTex.width = textureSize;
         mainTex.height = textureSize;
-        Minimap = new Minimap(mainTex);
+        Minimap = new Minimap();
+        Minimap.Init();
 
-        NavMeshBorderDrawer borderDrawer = Object.FindFirstObjectByType<NavMeshBorderDrawer>();
-        Minimap.DrawMap(borderDrawer);
-
-        FogOfWar fogOfWar = new FogOfWar(textureSize, controller.material);
-        Minimap.FogOfWar = fogOfWar;
+        //NavMeshBorderDrawer borderDrawer = Object.FindFirstObjectByType<NavMeshBorderDrawer>();
+        //Minimap.DrawMap(borderDrawer);
     }
 }

@@ -7,8 +7,10 @@ Shader "Unlit/FogOfWar"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" }
         LOD 200
+
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -46,7 +48,8 @@ Shader "Unlit/FogOfWar"
             {
                 half4 mainColor = tex2D(_MainTex, i.uv);
                 half4 fogColor = tex2D(_FogTex, i.uv);
-                return lerp(fogColor, mainColor, fogColor.a);
+                mainColor.a *= fogColor.a;
+                return mainColor;
             }
             ENDCG
         }

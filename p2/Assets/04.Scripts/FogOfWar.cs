@@ -2,7 +2,6 @@
 
 public class FogOfWar
 {
-    private Material _fogMaterial;
     private Texture2D _fogOfWarTexture2D;
     private Color32[] _fogPixels;
     private int _textureSize;
@@ -12,7 +11,7 @@ public class FogOfWar
     private const float DARKNESS_PARAM1 = 6.0f;
     private const float DARKNESS_PARAM2 = 6.0f;
 
-    public FogOfWar(int textureSize, Material material)
+    public FogOfWar(int textureSize)
     {
         _textureSize = textureSize;
         _fogOfWarTexture2D = new Texture2D(_textureSize, _textureSize, TextureFormat.RGBA32, false);
@@ -20,8 +19,6 @@ public class FogOfWar
         _fogOfWarTexture2D.wrapMode = TextureWrapMode.Clamp;
         _fogOfWarTexture2D.Apply();
 
-        _fogMaterial = material;
-        _fogMaterial.SetTexture("_FogTex", _fogOfWarTexture2D);
         _fogPixels = new Color32[_textureSize * _textureSize];
 
         ClearFogOfWar();

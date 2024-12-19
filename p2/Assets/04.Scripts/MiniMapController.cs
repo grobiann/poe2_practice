@@ -18,14 +18,3 @@ public class MiniMapController : MonoBehaviour
         //    new Vector3(0, 10, 0);
     }
 }
-
-
-public class UI_MinimapFull : MonoBehaviour
-{
-
-}
-
-public class  UI_MinimapSmall : MonoBehaviour
-{
-
-}
