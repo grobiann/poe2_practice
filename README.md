@@ -3,18 +3,18 @@
 해당 프로젝트에서 구현할 내용은 아래와 같습니다.
 
 == Main ==
-- Character Movement (A* or Nav mesh)
-- minimap (fog of war, shader연습)
-- map generator (procedural)
-- poe profiler (cpu, gpu, shader, network 속도(ms) 표현)
-- Behaviour tree (boss pattern)
-- 서버 구현 (Redis? 미정)
-- 전투 동기화
-- 파티 전투
-- monster model lazy load
+- [ ]  Character Movement (A* or Nav mesh)
+- [ ] minimap (fog of war, shader연습)
+- [ ] map generator (procedural)
+- [ ] poe profiler (cpu, gpu, shader, network 속도(ms) 표현)
+- [ ] Behaviour tree (boss pattern)
+- [ ] 서버 구현 (Redis? 미정)
+- [ ] 전투 동기화
+- [ ] 파티 전투
+- [ ] monster model lazy load
 
 == Sub ==
-- IK (boss)
-- shader를 활용한 이펙트 표현 (shader 연습)
-- AI를 활용한 기능 (사용 가능한 부분 고민)
-- Unity6 기능 (new Input System, awaitable)
+- [ ] IK (boss)
+- [ ] shader를 활용한 이펙트 표현 (shader 연습)
+- [ ] AI를 활용한 기능 (사용 가능한 부분 고민)
+- [ ] Unity6 기능 (new Input System, awaitable)
