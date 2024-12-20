@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using p2.Settings;
+using UnityEngine;
 
 public class MinimapUiController : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class MinimapUiController : MonoBehaviour
         Full,
         Small
     }
+
+    public EMinimapState CurrentState { get; private set; }
 
     [SerializeField] private GameObject _fullMinimap;
     [SerializeField] private GameObject _smallMinimap;
@@ -33,6 +36,8 @@ public class MinimapUiController : MonoBehaviour
 
     public void SetMinimapState(EMinimapState state)
     {
+        CurrentState = state;
+
         switch (state)
         {
             case EMinimapState.Full:

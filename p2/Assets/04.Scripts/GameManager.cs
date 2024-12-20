@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using p2.Settings;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEditor.SceneManagement;
 using UnityEngine;
