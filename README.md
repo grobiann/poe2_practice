@@ -3,7 +3,7 @@
 해당 프로젝트에서 구현할 내용은 아래와 같습니다.
 
 == Main ==
-- [ ]  Character Movement (A* or Nav mesh)
+- [x]  Character Movement (A* or Nav mesh)
 - [ ] minimap (fog of war, shader연습)
 - [ ] map generator (procedural)
 - [ ] poe profiler (cpu, gpu, shader, network 속도(ms) 표현)
