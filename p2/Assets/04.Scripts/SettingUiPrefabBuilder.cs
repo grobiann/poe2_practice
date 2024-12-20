@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static p2.Settings.UI.SettingUiPrefabBuilder;
 
 namespace p2.Settings.UI
 {
@@ -13,11 +14,11 @@ namespace p2.Settings.UI
 
         private Transform _parent;
         private Action<SettingItemBase> _onValueChanged;
-        private List<IItemBuildData> _itemsToInstantiate = new List<IItemBuildData>();
+        private List<ISettingItemAttribute> _itemsToInstantiate = new List<ISettingItemAttribute>();
 
         public void Build()
         {
-            if(_parent == null)
+            if (_parent == null)
             {
                 Debug.LogWarning("Parent is not set");
                 return;
@@ -44,131 +45,52 @@ namespace p2.Settings.UI
 
         public SettingUiPrefabBuilder CreateTitleOption(string label)
         {
-            _itemsToInstantiate.Add(new TitleItemBuildData(label));
+            _itemsToInstantiate.Add(new TitleItemAttribute(label));
             return this;
         }
 
-        public SettingUiPrefabBuilder CreateBoolOption(ESettingParamID id, string label, bool value)
+        public SettingUiPrefabBuilder CreateBoolOption(ESettingItemID id, string label, string desc, bool value)
         {
-            _itemsToInstantiate.Add(new BoolItemBuildData(id, label, value));
+            _itemsToInstantiate.Add(new BoolItemAttribute(id, label, desc, value));
             return this;
         }
 
-        public SettingUiPrefabBuilder CreateIntOption(ESettingParamID id, string label, int value, int min, int max, int interval)
+        public SettingUiPrefabBuilder CreateIntOption(ESettingItemID id, string label, int value, int min, int max, int interval)
         {
-            _itemsToInstantiate.Add(new IntItemBuildData(id, label, value, min, max, interval));
+            _itemsToInstantiate.Add(new IntItemAttribute(id, label, value, min, max, interval));
             return this;
         }
 
-        public SettingUiPrefabBuilder CreateDropDownOption(ESettingParamID id, string label, string[] options, int value)
+        public SettingUiPrefabBuilder CreateDropDownOption(ESettingItemID id, string label, string[] options, int value)
         {
-            _itemsToInstantiate.Add(new DropdownItemBuildData(id, label, options, value));
+            _itemsToInstantiate.Add(new DropdownItemAttribute(id, label, options, value));
             return this;
         }
 
-        private SettingItemBase InstantiateItem(IItemBuildData item, Transform parent)
+        private SettingItemBase InstantiateItem(ISettingItemAttribute buildData, Transform parent)
         {
             SettingItemBase result;
-            switch (item.ItemBuildType)
+            switch (buildData.ItemType)
             {
-                case EItemBuildType.Title:
+                case ESettingItemType.Title:
                     result = Instantiate(_titleOptionPrefab, parent);
                     break;
-                case EItemBuildType.Bool:
+                case ESettingItemType.Bool:
                     result = Instantiate(_boolOptionPrefab, parent);
                     break;
-                case EItemBuildType.Int:
+                case ESettingItemType.Int:
                     result = Instantiate(_intOptionPrefab, parent);
                     break;
-                case EItemBuildType.Dropdown:
+                case ESettingItemType.Dropdown:
                     result = Instantiate(_dropDownOptionPrefab, parent);
                     break;
                 default:
-                    Debug.LogError("Unknown item type: " + item.ItemBuildType);
+                    Debug.LogError("Unknown item type: " + buildData.ItemType);
                     return null;
             }
 
-            result.InitId(item.ParamID);
+            result.InitAttribute(buildData);
             return result;
-        }
-
-        public enum EItemBuildType
-        {
-            Title,
-            Bool,
-            Int,
-            Dropdown
-        }
-        public interface IItemBuildData {
-            EItemBuildType ItemBuildType { get; }
-            ESettingParamID ParamID { get; }
-        }
-        private class TitleItemBuildData : IItemBuildData
-        {
-            public EItemBuildType ItemBuildType => EItemBuildType.Title;
-            public ESettingParamID ParamID => ESettingParamID.None;
-            public string title;
-
-            public TitleItemBuildData(string title)
-            {
-                this.title = title;
-            }
-        }
-
-        private class BoolItemBuildData : IItemBuildData
-        {
-            public EItemBuildType ItemBuildType => EItemBuildType.Bool;
-            public ESettingParamID ParamID => id;
-            public ESettingParamID id;
-            public string label;
-            public bool value;
-
-            public BoolItemBuildData(ESettingParamID id, string label, bool value)
-            {
-                this.id = id;
-                this.label = label;
-                this.value = value;
-            }
-        }
-
-        private class IntItemBuildData : IItemBuildData
-        {
-            public EItemBuildType ItemBuildType => EItemBuildType.Int;
-            public ESettingParamID ParamID => id;
-            public ESettingParamID id;
-            public string label;
-            public int value;
-            public int min;
-            public int max;
-            public int interval;
-
-            public IntItemBuildData(ESettingParamID id, string label, int value, int min, int max, int interval)
-            {
-                this.id = id;
-                this.label = label;
-                this.value = value;
-                this.min = min;
-                this.max = max;
-                this.interval = interval;
-            }
-        }
-
-        private class DropdownItemBuildData : IItemBuildData
-        {
-            public EItemBuildType ItemBuildType => EItemBuildType.Dropdown;
-            public ESettingParamID ParamID => id;
-            public ESettingParamID id;
-            public string label;
-            public string[] options;
-            public int value;
-
-            public DropdownItemBuildData(ESettingParamID id, string label, string[] options, int value)
-            {
-                this.id = id;
-                this.label = label;
-                this.options = options;
-                this.value = value;
-            }
         }
     }
 }

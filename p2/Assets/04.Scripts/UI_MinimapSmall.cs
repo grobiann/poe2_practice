@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using p2.Settings;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_MinimapSmall : MonoBehaviour
@@ -16,8 +17,11 @@ public class UI_MinimapSmall : MonoBehaviour
         _minimap = GameManager.Instance.CurrentGameMode.Minimap;
         _minimap.Draw(renderTexture);
         _rawImage.material = _minimap.Material;
+    }
 
-        SetMapFov(FieldOfView);
+    private void OnEnable()
+    {
+        Refresh();
     }
 
     private void Update()
@@ -26,8 +30,9 @@ public class UI_MinimapSmall : MonoBehaviour
         _rawImage.uvRect = _minimap.ExtractRect(playerPosition, FieldOfView, FieldOfView);
     }
 
-    public void SetMapFov(float fov)
+    public void Refresh()
     {
-        FieldOfView = fov;
+        GameSettings.MapAttribute setting = new GameSettings.MapAttribute();
+        FieldOfView = setting.MinimapFOV;
     }
 }

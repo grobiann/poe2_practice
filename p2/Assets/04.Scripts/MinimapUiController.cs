@@ -11,27 +11,56 @@ public class MinimapUiController : MonoBehaviour
 
     public EMinimapState CurrentState { get; private set; }
 
-    [SerializeField] private GameObject _fullMinimap;
-    [SerializeField] private GameObject _smallMinimap;
+
+    [SerializeField] private UI_MinimapFull _fullMinimap;
+    [SerializeField] private UI_MinimapSmall _smallMinimap;
     [SerializeField] private KeyCode _minimapSwitchKey = KeyCode.Tab;
+
+    public bool EnableSmallMinimap { get; private set; }
+    public bool AutoMap { get; private set; }
 
     private void Start()
     {
         SetMinimapState(EMinimapState.Small);
+        Refresh();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(_minimapSwitchKey))
         {
-            SwitchMinimap();
+            HandleSwitchState();
         }
     }
 
-    public void SwitchMinimap()
+    private void HandleSwitchState()
     {
-        _fullMinimap.SetActive(!_fullMinimap.activeSelf);
-        _smallMinimap.SetActive(!_smallMinimap.activeSelf);
+        if (CurrentState == EMinimapState.Small)
+        {
+            SetMinimapState(EMinimapState.Full);
+            return;
+        }
+
+        if (AutoMap && _fullMinimap.IsCenter == false && _fullMinimap.IsMovingToCenter == false)
+        {
+            _fullMinimap.MoveToCenter();
+            return;
+        }
+
+        SetMinimapState(EMinimapState.Small);
+    }
+
+    public void Refresh()
+    {
+        var settings = new GameSettings.MapAttribute();
+
+        EnableSmallMinimap = settings.ShowMinimap;
+        AutoMap = settings.AutoMap;
+
+        if (CurrentState == EMinimapState.Small)
+        {
+            _smallMinimap.gameObject.SetActive(EnableSmallMinimap);
+        }
     }
 
     public void SetMinimapState(EMinimapState state)
@@ -41,12 +70,12 @@ public class MinimapUiController : MonoBehaviour
         switch (state)
         {
             case EMinimapState.Full:
-                _fullMinimap.SetActive(true);
-                _smallMinimap.SetActive(false);
+                _fullMinimap.gameObject.SetActive(true);
+                _smallMinimap.gameObject.SetActive(false);
                 break;
             case EMinimapState.Small:
-                _fullMinimap.SetActive(false);
-                _smallMinimap.SetActive(true);
+                _fullMinimap.gameObject.SetActive(false);
+                _smallMinimap.gameObject.SetActive(EnableSmallMinimap ? true : false);
                 break;
             default:
                 Debug.LogError("Invalid minimap state");

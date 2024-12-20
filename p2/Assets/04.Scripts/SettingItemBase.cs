@@ -1,4 +1,5 @@
-﻿using System;
+﻿using p2.Settings.UI;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,16 +14,19 @@ namespace p2.Settings
         }
 
         public bool Interactable => _interactable;
-        public ESettingParamID ParamID { get; private set; }
+        public ESettingItemID ItemID => _attribute.ItemID;
+        public ESettingItemType ItemType => _attribute.ItemType;
+        protected ISettingItemAttribute _attribute;
 
         [SerializeField] private Image _background;
         [SerializeField] private bool _interactable = true;
 
         private event Action<SettingItemBase> onValueChanged = delegate { };
 
-        public void InitId(ESettingParamID id)
+        public void InitAttribute(ISettingItemAttribute attribute)
         {
-            ParamID = id;
+            _attribute = attribute;
+            OnAttributeInitialized();
         }
 
         public void InitListener(Action<SettingItemBase> listener)
@@ -59,5 +63,6 @@ namespace p2.Settings
         {
             onValueChanged(this);
         }
+        protected virtual void OnAttributeInitialized() { }
     }
 }

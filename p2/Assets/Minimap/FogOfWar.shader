@@ -5,6 +5,8 @@ Shader "Unlit/FogOfWar"
         _MainTex ("Texture", 2D) = "white" {}
         _FogTex ("Fog of War Texture", 2D) = "black" {}
         _WalkableTex ("Walakble Texture", 2D) = "black" {}
+        _Opacity ("Opacity", Range(0, 1)) = 1
+        _LandscapeOpacity ("Landscape Opacity", Range(0, 1)) = 1
     }
     SubShader
     {
@@ -37,6 +39,8 @@ Shader "Unlit/FogOfWar"
             sampler2D _FogTex;
             sampler2D _WalkableTex;
             float4 _MainTex_ST;
+            float _Opacity;
+            float _LandscapeOpacity;
 
             v2f vert (appdata_t v)
             {
@@ -54,10 +58,10 @@ Shader "Unlit/FogOfWar"
 
                 if(fogColor.a >= 0.1 && fogColor.a <= 0.5 && walkableColor.r >= 0.9)
                 {
-                    return half4(0.0, 0.0, 1.0, fogColor.a);
+                    return half4(0.0, 0.0, 1.0, fogColor.a * _Opacity);
                 }
 
-                mainColor.a *= fogColor.a;
+                mainColor.a = mainColor.a * fogColor.a * _Opacity;
                 return mainColor;
             }
             ENDCG

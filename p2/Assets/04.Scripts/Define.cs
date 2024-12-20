@@ -6,7 +6,7 @@ public static class Define
     public static LayerMask MouseClickable = 1 << LayerMask.NameToLayer("MouseClickable");
 }
 
-public enum ESettingParamID
+public enum ESettingItemID
 {
     None = 0,
 

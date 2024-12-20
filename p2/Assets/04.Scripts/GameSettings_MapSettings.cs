@@ -10,6 +10,7 @@ namespace p2.Settings
             {
                 get => PlayerPrefsUtil.GetBool("setting_map_show_minimap", true);
                 set => PlayerPrefsUtil.SetBool("setting_map_show_minimap", value);
+                
             }
 
             public bool AutoMap

@@ -9,6 +9,8 @@ namespace p2.Settings.UI
         [SerializeField] private TextMeshProUGUI _label;
         [SerializeField] private Button _button;
         [SerializeField] private GameObject _checkMark;
+        
+        private string desc;
 
         public bool Value { get; private set; }
 
@@ -19,46 +21,28 @@ namespace p2.Settings.UI
 
         public void Initialize(string label, bool value)
         {
-            UnityEngine.Debug.Log("Initialize: " + label + " " + value);
+            _label.text = label;
+            Value = value;
+            Refresh();
+        }
+
+        protected override void OnAttributeInitialized()
+        {
+            BoolItemAttribute attribute = (BoolItemAttribute)_attribute;
+            Initialize(attribute.label, attribute.value);
         }
 
         private void OnButtonClicked()
         {
             Value = !Value;
+            Refresh();
+
             OnValueChanged();
         }
-    }
 
-    public class IntSettingItem : SettingItemBase
-    {
-        [SerializeField] private TextMeshProUGUI _label;
-        [SerializeField] private Slider _slider;
-
-        public int Value { get; private set; }
-
-        private void Awake()
+        private void Refresh()
         {
-            _slider.onValueChanged.AddListener(OnSliderValueChanged);
+            _checkMark.gameObject.SetActive(Value);
         }
-
-        public void Initialize(string label, float value, float min, float max, float interval)
-        {
-            UnityEngine.Debug.Log("Initialize: " + label + " " + value + " " + min + " " + max);
-        }
-
-        private void OnSliderValueChanged(float value)
-        {
-            Value = (int)value;
-            OnValueChanged();
-        }
-    }
-
-    public class TitleSettingItem : SettingItemBase
-    {
-
-    }
-
-    public class DropDownSettingItem : SettingItemBase
-    {
     }
 }

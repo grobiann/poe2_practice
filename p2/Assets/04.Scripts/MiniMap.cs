@@ -24,8 +24,8 @@ public interface IMapObjectDrawer
 public class Minimap
 {
     public Material Material { get; private set; }
-    public float MapAlpha { get; private set; } = 0.5f;
-    public float LandscapeAlpha { get; private set; } = 0.5f;
+    public float MapOpacity { get; private set; } = 0.5f;
+    public float LandscapeOpacity { get; private set; } = 0.5f;
 
     private const int TEXTURE_SIZE = 128;
     private const float TILE_SIZE = 1.0f;
@@ -78,20 +78,20 @@ public class Minimap
         _fogOfWarDrawer.DrawFogOfWar(_fogOfWarTex);
         _walkableDrawer.DrawWalkable(_walkableTex);
 
-        SetMapAlpha(MapAlpha);
-        SetLandscapeAlpha(LandscapeAlpha);
+        SetMapOpacity(MapOpacity);
+        SetLandscapeOpacity(LandscapeOpacity);
     }
 
-    public void SetMapAlpha(float alpha)
+    public void SetMapOpacity(float opacity)
     {
-        MapAlpha = alpha;
-        Material.SetFloat("_Alpha", alpha);
+        MapOpacity = opacity;
+        Material.SetFloat("_Opacity", opacity);
     }
 
-    public void SetLandscapeAlpha(float alpha)
+    public void SetLandscapeOpacity(float opacity)
     {
-        LandscapeAlpha = alpha;
-        Material.SetFloat("_LandscapeAlpha", alpha);
+        LandscapeOpacity = opacity;
+        Material.SetFloat("_LandscapeOpacity", opacity);
     }
 
     public void Draw(RenderTexture texture)
