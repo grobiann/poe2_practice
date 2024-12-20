@@ -1,11 +1,13 @@
 ﻿using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Character : MonoBehaviour
 {
     public Vector3 MoveVelocity => _movement.Velocity;
     public float MoveSpeed => _movement.MoveSpeed;
 
+    public CharacterMovementComponent Movement => _movement;
     [SerializeField] protected CharacterMovementComponent _movement;
     [SerializeField] protected CharacterMeshComponent _mesh;
 
@@ -14,6 +16,11 @@ public class Character : MonoBehaviour
 
     protected virtual void Awake()
     {
+    }
+
+    protected virtual void Update()
+    {
+        RefreshAnimParameter();
     }
 
     public void RotateTowards(Vector3 targetDirection)
@@ -28,11 +35,15 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void MoveByDirection(Vector3 direction)
-    {
-        _movement.MoveByDirection(direction);
 
-        RefreshAnimParameter();
+    public void SetMoveDestination(Vector3 destination)
+    {
+        _movement.MoveToDestination(destination);
+    }
+
+    public void SetMoveDirection(Vector3 direction)
+    {
+        _movement.MoveToDirection(direction);
     }
 
     private void RefreshAnimParameter()

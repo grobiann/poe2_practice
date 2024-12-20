@@ -1,12 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerCharacter : Character
 {
     public PlayerLevelSystem LevelSystem { get; private set; }
     public PlayerStats Stats { get; private set; }
-
+    
     protected override void Awake()
     {
         base.Awake();
@@ -19,6 +22,39 @@ public class PlayerCharacter : Character
         followCam.CameraComponent.fieldOfView = 90;
 
         _movement.MoveSpeed = 5;
+    }
+
+    private Queue<CharacterBehaviour> _behaviours = new Queue<CharacterBehaviour>();
+    private CancellationTokenSource _behaviourCts;
+    public void StopAllBehaviours()
+    {
+        _behaviours.Clear();
+        _behaviourCts?.Cancel();
+    }
+
+    public void RegisterBehaviour(CharacterBehaviour behaviour)
+    {
+        _behaviours.Enqueue(behaviour);
+
+        if(_behaviours.Count == 1)
+        {
+            _behaviourCts = new CancellationTokenSource();
+            Awaitable awaitable = UpdateBehaviour(_behaviourCts);
+        }
+    }
+
+    private async Awaitable UpdateBehaviour(CancellationTokenSource cts)
+    {
+        while (_behaviours.Count > 0)
+        {
+            CharacterBehaviour behaviour = _behaviours.Peek();
+            while (!behaviour.IsComplete)
+            {
+                behaviour.UpdateBehaviour();
+                await Awaitable.NextFrameAsync(cts.Token);
+            }
+            _behaviours.Dequeue();
+        }
     }
 }
 
