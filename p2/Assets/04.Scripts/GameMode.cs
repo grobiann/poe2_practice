@@ -23,16 +23,15 @@ public class GameMode
 
     private void PrepareMiniMap()
     {
-        MiniMapController controller = Object.FindFirstObjectByType<MiniMapController>();
         int textureSize = 128;
 
-        RenderTexture mainTex = controller.renderTexture;
-        mainTex.width = textureSize;
-        mainTex.height = textureSize;
-        Minimap = new Minimap();
-        Minimap.Init();
+        MinimapCameraDrawer minimapCameraDrawer = Object.FindFirstObjectByType<MinimapCameraDrawer>();
 
-        //NavMeshBorderDrawer borderDrawer = Object.FindFirstObjectByType<NavMeshBorderDrawer>();
-        //Minimap.DrawMap(borderDrawer);
+        Minimap = new Minimap(
+            new FogOfWar(textureSize),
+            minimapCameraDrawer,
+            new MinimapWalkableDrawer(),
+            minimapCameraDrawer);
+        Minimap.Init();
     }
 }

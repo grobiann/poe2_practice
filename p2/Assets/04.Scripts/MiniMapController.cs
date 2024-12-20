@@ -2,9 +2,6 @@
 
 public class MiniMapController : MonoBehaviour
 {
-    public Material material;
-    public RenderTexture renderTexture;
-
     private void Update()
     {
         // Update fog of war

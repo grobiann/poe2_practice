@@ -3161,8 +3161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e806edba3caec743ad826ebd7248a02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 9aae35d1cb46d054186e1a3e570dc385, type: 2}
-  renderTexture: {fileID: 8400000, guid: 5611b34315096584190a249aa4187bc6, type: 2}
 --- !u!114 &583463241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3172,7 +3170,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 583463237}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd11cae0d17cbc5429ff808b501304f6, type: 3}
+  m_Script: {fileID: 11500000, guid: b2e0cef19aa2b1548b0e470673163d07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _borderRenderer: {fileID: 710817714}
@@ -4416,11 +4414,11 @@ RectTransform:
   - {fileID: 1878004756}
   m_Father: {fileID: 966275523}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20, y: -20}
-  m_SizeDelta: {x: 300, y: 300}
-  m_Pivot: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &826330677
 MonoBehaviour:
   m_ObjectHideFlags: 0
