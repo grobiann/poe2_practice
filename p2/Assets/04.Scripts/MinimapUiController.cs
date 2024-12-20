@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UI_MinimapSwitcher : MonoBehaviour
+public class MinimapUiController : MonoBehaviour
 {
     public enum EMinimapState
     {
@@ -10,11 +10,19 @@ public class UI_MinimapSwitcher : MonoBehaviour
 
     [SerializeField] private GameObject _fullMinimap;
     [SerializeField] private GameObject _smallMinimap;
+    [SerializeField] private KeyCode _minimapSwitchKey = KeyCode.Tab;
 
     private void Start()
     {
-        _fullMinimap.SetActive(true);
-        _smallMinimap.SetActive(false);
+        SetMinimapState(EMinimapState.Small);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(_minimapSwitchKey))
+        {
+            SwitchMinimap();
+        }
     }
 
     public void SwitchMinimap()
