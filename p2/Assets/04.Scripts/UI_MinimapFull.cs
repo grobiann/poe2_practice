@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Runtime.CompilerServices;
+﻿using p2.Minimap;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +19,7 @@ public class UI_MinimapFull : MonoBehaviour
     {
         RenderTexture renderTexture = _rawImage.texture as RenderTexture;
 
-        _minimap = GameManager.Instance.CurrentGameMode.Minimap;
+        _minimap = Object.FindFirstObjectByType<MiniMapController>().Minimap;
         _minimap.Draw(renderTexture);
         _rawImage.material = _minimap.Material;
     }

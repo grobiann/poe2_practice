@@ -1,71 +1,79 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.Profiling;
 
-public class FogOfWar : IFogOfWarDrawer
+namespace p2.Minimap
 {
-    private Color32[] _fogPixels;
-    private float _tileSize = 1.0f;
-    private readonly int _textureSize;
-
-    private const float REVEAL_RADIUS = 12.0f;
-    private const float DARKNESS_PARAM1 = 6.0f;
-    private const float DARKNESS_PARAM2 = 6.0f;
-
-    public FogOfWar(int textureSize)
+    public class FogOfWar : IFogOfWarDrawer
     {
-        _textureSize = textureSize;
-        _fogPixels = new Color32[textureSize * textureSize];
-        // ClearFogOfWar();
-    }
+        public float RevealRadius { get; set; } = 10.0f;
+        public float EdgeSharpness { get; set; } = 3f;
 
-    public void DrawFogOfWar(Texture2D texture)
-    {
-        
-    }
+        private Color32[] _fogPixels;
+        private float _tileSize = 1.0f;
+        private readonly int _textureSize;
 
-    public void Reveal(Texture2D texture, Vector3 position)
-    {
-        int centerX = (int)(position.x / _tileSize);
-        int centerY = (int)(position.z / _tileSize);
-        float radiusSquared = REVEAL_RADIUS * REVEAL_RADIUS;
-
-        for (int y = centerY - (int)REVEAL_RADIUS; y <= centerY + (int)REVEAL_RADIUS; y++)
+        public FogOfWar(int textureSize)
         {
-            for (int x = centerX - (int)REVEAL_RADIUS; x <= centerX + (int)REVEAL_RADIUS; x++)
+            _textureSize = textureSize;
+            _fogPixels = new Color32[textureSize * textureSize];
+
+            for (int i = 0; i < _fogPixels.Length; i++)
             {
-                int index = y * _textureSize + x;
-                if (index >= 0 && index < _fogPixels.Length)
+                _fogPixels[i] = new Color32(0,0,0, 255);
+            }
+        }
+
+        public void DrawFogOfWar(Texture2D texture)
+        {
+            texture.SetPixels32(_fogPixels);
+            texture.Apply();
+        }
+
+        public void Reveal(Texture2D texture, Vector3 position)
+        {
+            Profiler.BeginSample("FogOfWar.Reveal");
+
+            int mapSize = 128;
+            int centerX = (int)(position.x / mapSize * _textureSize / _tileSize);
+            int centerY = (int)(position.z / mapSize * _textureSize / _tileSize);
+            float gridRevealRadius = RevealRadius / mapSize * _textureSize / _tileSize;
+            float radiusSquared = gridRevealRadius * gridRevealRadius;
+
+            for (int y = centerY - (int)gridRevealRadius; y <= centerY + (int)gridRevealRadius; y++)
+            {
+                for (int x = centerX - (int)gridRevealRadius; x <= centerX + (int)gridRevealRadius; x++)
                 {
-                    // gaussian distribution
+                    int index = y * _textureSize + x;
+                    if (index < 0 || index >= _fogPixels.Length)
+                        continue;
+
                     float dx = x - centerX;
                     float dy = y - centerY;
                     float distanceSquared = dx * dx + dy * dy;
+                    if (distanceSquared > radiusSquared)
+                        continue;
 
-                    if (distanceSquared <= radiusSquared)
+                    // (1,0)과 (-1,0)을 지나도록 하는 alpha 계산식
+                    // clamp01(cof*(1-abs(x))
+                    // https://www.wolframalpha.com/input?i=min%28max%282*%281-abs%28x%29%29%2C0%29%2C1%29
+                    float xValue = Mathf.Sqrt(distanceSquared / radiusSquared);
+                    float alpha = Mathf.Clamp01(EdgeSharpness * (1 - xValue));
+                    byte opacity = (byte)(255 * (1.0f - alpha));
+                    byte prevOpacity = _fogPixels[index].a;
+
+                    if (opacity < prevOpacity)
                     {
-                        byte prevAlpha = _fogPixels[index].a;
-                        float floatAlpha = DARKNESS_PARAM1 * Mathf.Exp(-DARKNESS_PARAM2 * distanceSquared / radiusSquared);
-                        floatAlpha = Mathf.Min(floatAlpha, 1.0f);
-                        byte alpha =  (byte)(255 * floatAlpha);
-
-                        if (alpha > prevAlpha)
-                        {
-                            _fogPixels[index] = new Color32(0, 0, 0, alpha);
-                        }
+                        byte inverseOpacity = (byte)(255 - opacity);
+                        _fogPixels[index] = new Color32(inverseOpacity, inverseOpacity, inverseOpacity, opacity);
                     }
                 }
             }
-        }
-        texture.SetPixels32(_fogPixels);
-        texture.Apply();
-    }
 
-    //public void ClearFogOfWar()
-    //{
-    //    for (int i = 0; i < _fogPixels.Length; i++)
-    //    {
-    //        _fogPixels[i] = new Color32(0, 0, 0, 0);
-    //    }
-    //    _fogOfWarTexture2D.SetPixels32(_fogPixels);
-    //    _fogOfWarTexture2D.Apply();
-    //}
+            texture.SetPixels32(_fogPixels);
+            texture.Apply();
+
+            Profiler.EndSample();
+        }
+    }
 }

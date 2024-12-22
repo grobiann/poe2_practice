@@ -1,20 +1,22 @@
-﻿using p2.Settings;
+﻿using p2.Minimap;
+using p2.Settings;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class UI_MinimapSmall : MonoBehaviour
 {
     [SerializeField] private RawImage _rawImage;
 
     public float FieldOfView { get; private set; } = 50.0f;
-    
+
     private Minimap _minimap;
 
     private void Start()
     {
         RenderTexture renderTexture = _rawImage.texture as RenderTexture;
-        
-        _minimap = GameManager.Instance.CurrentGameMode.Minimap;
+
+        _minimap = Object.FindFirstObjectByType<MiniMapController>().Minimap;
         _minimap.Draw(renderTexture);
         _rawImage.material = _minimap.Material;
     }

@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using p2.Minimap;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace p2.Settings.UI
@@ -35,24 +36,26 @@ namespace p2.Settings.UI
         private void OnValueChanged(SettingItemBase option)
         {
             GameSettings.MapAttribute mapSettings = new GameSettings.MapAttribute();
+            MinimapUiController minimapUiController = Object.FindFirstObjectByType<MinimapUiController>();
+            MiniMapController minimapController = Object.FindFirstObjectByType<MiniMapController>();
 
             switch (option.ItemID)
             {
                 case ESettingItemID.Map_ShowMinimap:
                     mapSettings.ShowMinimap = ((BoolSettingItem)option).Value;
-                    Object.FindFirstObjectByType<MinimapUiController>().Refresh();
+                    minimapUiController.Refresh();
                     break;
                 case ESettingItemID.Map_AutoMap:
                     mapSettings.AutoMap = ((BoolSettingItem)option).Value;
-                    Object.FindFirstObjectByType<MinimapUiController>().Refresh();
+                    minimapUiController.Refresh();
                     break;
                 case ESettingItemID.Map_LandscapeOpacity:
                     mapSettings.LandscapeOpacity = ((IntSettingItem)option).Value;
-                    GameManager.Instance.CurrentGameMode.Minimap.SetLandscapeOpacity(mapSettings.LandscapeOpacity / 255.0f);
+                    minimapController.Minimap.SetLandscapeOpacity(mapSettings.LandscapeOpacity / 255.0f);
                     break;
                 case ESettingItemID.Map_MapOpacity:
                     mapSettings.MapOpacity = ((IntSettingItem)option).Value;
-                    GameManager.Instance.CurrentGameMode.Minimap.SetMapOpacity(mapSettings.MapOpacity / 255.0f);
+                    minimapController.Minimap.SetMapOpacity(mapSettings.MapOpacity / 255.0f);
                     break;
                 case ESettingItemID.Map_MinimapFOV:
                     mapSettings.MinimapFOV = ((IntSettingItem)option).Value;
