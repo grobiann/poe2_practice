@@ -9,9 +9,13 @@ namespace p2.Minimap
         public List<Transform> _fogAgents = new List<Transform>();
         public Minimap Minimap => _minimap;
 
+        [SerializeField] private Material mat;
+
         [Header("Fog of War")]
+        [SerializeField] private ComputeShader fogShader;
         [SerializeField] private float revealRadius = 10.0f;
         [SerializeField] private float edgeSharpness = 3f;
+
 
         private FogOfWar _fogOfWar;
         private MinimapCameraDrawer _minimapCameraDrawer;
@@ -55,11 +59,13 @@ namespace p2.Minimap
             int textureSize = 512;
             _minimapCameraDrawer = Object.FindFirstObjectByType<MinimapCameraDrawer>();
             _fogOfWar = new FogOfWar(textureSize);
+            _fogOfWar.fogShader = fogShader;
             _walkableDrawer = new MinimapMovableDrawer();
 
             UpdateFogOfWarParams();
 
             _minimap = new Minimap(
+                mat,
                 textureSize,
                 _minimapCameraDrawer,
                 _fogOfWar,

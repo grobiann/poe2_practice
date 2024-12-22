@@ -5,8 +5,8 @@ namespace p2.Minimap
 {
     public interface IFogOfWarDrawer
     {
-        void DrawFogOfWar(Texture2D texture);
-        void Reveal(Texture2D texture, Vector3 position);
+        void DrawFogOfWar(RenderTexture texture);
+        void Reveal(RenderTexture texture, Vector3 position);
     }
 
     public interface IEdgeDrawer
@@ -38,11 +38,12 @@ namespace p2.Minimap
         private readonly IMapObjectDrawer _mapObjectDrawer;
 
         private Texture2D _mainTex;
-        private Texture2D _fogOfWarTex;
+        private RenderTexture _fogOfWarTex;
         private Texture2D _movableTex;
         private readonly int _textureSize;
 
         public Minimap(
+            Material mat,
             int textureSize,
             IEdgeDrawer edgeDrawer,
             IFogOfWarDrawer fogOfWarDrawer,
@@ -56,10 +57,17 @@ namespace p2.Minimap
             _movableDrawer = walkableDrawer;
             _mapObjectDrawer = mapObjectDrawer;
 
-            _fogOfWarTex = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
-            _fogOfWarTex.filterMode = FilterMode.Bilinear;
-            _fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
-            _fogOfWarTex.Apply();
+            //_fogOfWarTex = new RenderTexture(_textureSize, _textureSize, 0, RenderTextureFormat.ARGB32);
+            //_fogOfWarTex.filterMode = FilterMode.Bilinear;
+            //_fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
+            //_fogOfWarTex.enableRandomWrite = true;
+            //_fogOfWarTex.Create();
+            _fogOfWarTex = mat.GetTexture("_FogTex") as RenderTexture;
+
+            //_fogOfWarTex = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
+            //_fogOfWarTex.filterMode = FilterMode.Bilinear;
+            //_fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
+            //_fogOfWarTex.Apply();
 
             _mainTex = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
             _mainTex.filterMode = FilterMode.Bilinear;
@@ -71,9 +79,10 @@ namespace p2.Minimap
             _movableTex.wrapMode = TextureWrapMode.Clamp;
             _movableTex.Apply();
 
-            Material = new Material(Shader.Find("Unlit/FogOfWar"));
-            Material.SetTexture("_MainTex", _mainTex);
-            Material.SetTexture("_FogTex", _fogOfWarTex);
+            //Material = new Material(Shader.Find("Unlit/FogOfWar"));
+            Material = mat;
+            //Material.SetTexture("_MainTex", _mainTex);
+            //Material.SetTexture("_FogBuffer", _fogOfWarTex);
             Material.SetTexture("_MovableTex", _movableTex);
         }
 

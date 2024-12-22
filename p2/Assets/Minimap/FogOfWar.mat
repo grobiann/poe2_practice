@@ -24,10 +24,14 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _FogTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8400000, guid: d35d692625408234b89ff6fc56800b2b, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
+        m_Texture: {fileID: 8400000, guid: 5611b34315096584190a249aa4187bc6, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MovableTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -38,8 +42,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 1
-    - _LandscapeOpacity: 1
-    - _Opacity: 1
+    - _LandscapeOpacity: 0.5
+    - _Opacity: 0.5
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

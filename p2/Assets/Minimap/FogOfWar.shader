@@ -3,8 +3,8 @@ Shader "Unlit/FogOfWar"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _FogTex ("Fog of War Texture", 2D) = "black" {}
         _MovableTex ("Movable Texture", 2D) = "black" {}
+        _FogTex ("Fog Texture", 2D) = "black" {}
     }
     SubShader
     {
@@ -34,8 +34,9 @@ Shader "Unlit/FogOfWar"
             };
 
             sampler2D _MainTex;
-            sampler2D _FogTex;
             sampler2D _MovableTex;
+            sampler2D _FogTex;
+
             float4 _MainTex_ST;
 
             v2f vert (appdata_t v)
@@ -49,21 +50,23 @@ Shader "Unlit/FogOfWar"
             fixed4 frag (v2f i) : SV_Target
             {
                 half4 mainColor = tex2D(_MainTex, i.uv);
-                half4 fogColor = tex2D(_FogTex, i.uv);
                 half4 movableColor = tex2D(_MovableTex, i.uv);
+                half4 fogColor = tex2D(_FogTex, i.uv);
+                
+                float fogAlpha = fogColor.r;
 
-                if(fogColor.a > 0.0 && fogColor.a < 1.0 && movableColor.r > 0)
-                {
+                if(fogAlpha > 0.1 && fogAlpha < 0.9 && movableColor.r > 0)
+                {   
                     // gausian distribution
                     // (e^(-(2x-1)^2)-0.37)*1.59
                     // https://www.wolframalpha.com/input?i=%28e%5E%28-%282x-1%29%5E2%29-0.37%29*1.59
-                    half fogAlpha = (exp(-pow(2*fogColor.a-1, 2))-0.37)*1.59;
-                    half4 fog = half4(0.0, 0.0, 1.0, fogAlpha*0.9);
-                    mainColor *= (1 - fogColor.a* 2);
+                    half gaussianAlpha = (exp(-pow(2*fogAlpha-1, 2))-0.37)*1.59;
+                    half4 fog = half4(0.0, 0.0, 1.0, gaussianAlpha*0.9);
+                    mainColor *= (1 - fogAlpha* 2);
                     return mainColor + fog ;
                 }
 
-                mainColor.a = mainColor.a * (1 - fogColor.a);
+                mainColor.a = mainColor.a * (1 - fogAlpha);
                 return mainColor;
             }
             ENDCG

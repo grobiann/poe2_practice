@@ -3851,6 +3851,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fogAgents: []
+  mat: {fileID: 2100000, guid: 9aae35d1cb46d054186e1a3e570dc385, type: 2}
+  fogShader: {fileID: 7200000, guid: 867674eb41bed7e41bf3b7f33e1c7e7f, type: 3}
   revealRadius: 10
   edgeSharpness: 3
 --- !u!114 &583463241

@@ -6,31 +6,52 @@ namespace p2.Minimap
 {
     public class FogOfWar : IFogOfWarDrawer
     {
+        public ComputeShader fogShader;
+        //private RenderTexture fogTexture;
+
+        //private ComputeBuffer fogBuffer;
+        //private float[] fogValues;
+
         public float RevealRadius { get; set; } = 10.0f;
         public float EdgeSharpness { get; set; } = 3f;
 
-        private Color32[] _fogPixels;
+        //private Color32[] _fogPixels;
         private float _tileSize = 1.0f;
         private readonly int _textureSize;
 
         public FogOfWar(int textureSize)
         {
             _textureSize = textureSize;
-            _fogPixels = new Color32[textureSize * textureSize];
+            //_fogPixels = new Color32[textureSize * textureSize];
 
-            for (int i = 0; i < _fogPixels.Length; i++)
-            {
-                _fogPixels[i] = new Color32(0,0,0, 255);
-            }
+            //for (int i = 0; i < _fogPixels.Length; i++)
+            //{
+            //    _fogPixels[i] = new Color32(0,0,0, 255);
+            //}
         }
 
-        public void DrawFogOfWar(Texture2D texture)
+        //~FogOfWar()
+        //{
+        //    if (fogTexture != null)
+        //    {
+        //        fogTexture.Release();
+        //    }
+        //}
+
+        public void DrawFogOfWar(RenderTexture texture)
         {
-            texture.SetPixels32(_fogPixels);
-            texture.Apply();
+            Texture2D white = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            white.SetPixel(0, 0, new Color(1.0f, 1.0f, 1.0f, 1.0f));
+            white.Apply();
+
+            Graphics.Blit(white, texture);
+            //material.SetTexture("_FogBuffer", fogTexture); // RenderTexture 전달
+
+            //texture.SetPixels32(_fogPixels);
+            //texture.Apply();
         }
 
-        public void Reveal(Texture2D texture, Vector3 position)
+        public void Reveal(RenderTexture fogTexture, Vector3 position)
         {
             Profiler.BeginSample("FogOfWar.Reveal");
 
@@ -40,38 +61,29 @@ namespace p2.Minimap
             float gridRevealRadius = RevealRadius / mapSize * _textureSize / _tileSize;
             float radiusSquared = gridRevealRadius * gridRevealRadius;
 
-            for (int y = centerY - (int)gridRevealRadius; y <= centerY + (int)gridRevealRadius; y++)
-            {
-                for (int x = centerX - (int)gridRevealRadius; x <= centerX + (int)gridRevealRadius; x++)
-                {
-                    int index = y * _textureSize + x;
-                    if (index < 0 || index >= _fogPixels.Length)
-                        continue;
+            //if(fogTexture == null | fogTexture.width != _textureSize)
+            //{
+            //    if (fogTexture != null)
+            //    {
+            //        fogTexture.Release();
+            //    }
 
-                    float dx = x - centerX;
-                    float dy = y - centerY;
-                    float distanceSquared = dx * dx + dy * dy;
-                    if (distanceSquared > radiusSquared)
-                        continue;
+            //    fogTexture = new RenderTexture(_textureSize, _textureSize, 0, RenderTextureFormat.ARGB32);
+            //    fogTexture.enableRandomWrite = true;
+            //    fogTexture.Create();
+            //}
 
-                    // (1,0)과 (-1,0)을 지나도록 하는 alpha 계산식
-                    // clamp01(cof*(1-abs(x))
-                    // https://www.wolframalpha.com/input?i=min%28max%282*%281-abs%28x%29%29%2C0%29%2C1%29
-                    float xValue = Mathf.Sqrt(distanceSquared / radiusSquared);
-                    float alpha = Mathf.Clamp01(EdgeSharpness * (1 - xValue));
-                    byte opacity = (byte)(255 * (1.0f - alpha));
-                    byte prevOpacity = _fogPixels[index].a;
+            int kernel = fogShader.FindKernel("CSReveal");
+            fogShader.SetTexture(kernel, "fogBuffer", fogTexture);
+            fogShader.SetInt("textureSize", _textureSize);
+            fogShader.SetFloat("gridRevealRadius", gridRevealRadius);
+            fogShader.SetFloat("centerX", centerX);
+            fogShader.SetFloat("centerY", centerY);
+            fogShader.SetFloat("radiusSquared", radiusSquared);
+            fogShader.SetFloat("edgeSharpness", EdgeSharpness);
 
-                    if (opacity < prevOpacity)
-                    {
-                        byte inverseOpacity = (byte)(255 - opacity);
-                        _fogPixels[index] = new Color32(inverseOpacity, inverseOpacity, inverseOpacity, opacity);
-                    }
-                }
-            }
-
-            texture.SetPixels32(_fogPixels);
-            texture.Apply();
+            int threadGroups = Mathf.CeilToInt(_textureSize / 8.0f);
+            fogShader.Dispatch(kernel, threadGroups, threadGroups, 1);
 
             Profiler.EndSample();
         }

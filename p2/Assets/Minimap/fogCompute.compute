@@ -1,0 +1,40 @@
+#pragma kernel CSReveal
+
+RWTexture2D<float> fogBuffer;
+
+int textureSize;
+int gridRevealRadius;
+int centerX;
+int centerY;
+float radiusSquared;
+float edgeSharpness;
+
+[numthreads(8, 8, 1)]
+void CSReveal(uint3 id : SV_DispatchThreadID)
+{
+    int x = id.x;
+    int y = id.y;
+    
+    if (x < 0 || x >= textureSize || y < 0 || y >= textureSize)
+        return;
+    
+    float dx = x - centerX;
+    float dy = y - centerY;
+    float distanceSquared = dx * dx + dy * dy;
+
+    if (distanceSquared > radiusSquared)
+    {
+        return;
+    }
+    
+    float xValue = sqrt(distanceSquared / radiusSquared);
+    float alpha = clamp(edgeSharpness * (1.0f - xValue), 0.0f, 1.0f);
+    float opacity = 1.0f - alpha;
+
+    float prevOpacity = fogBuffer[int2(x, y)];
+
+    if (opacity < prevOpacity)
+    {
+        fogBuffer[int2(x, y)] = opacity;
+    }
+}
