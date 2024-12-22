@@ -1,4 +1,4 @@
-﻿using p2.Minimap;
+﻿using p2.mmap;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,20 +6,20 @@ using UnityEngine.UI;
 public class UI_MinimapFull : MonoBehaviour
 {
     [SerializeField] private RawImage _rawImage;
+    [SerializeField] private float _moveSpeedByInputKey = 50.0f;
+    [SerializeField] private float _moveSpeedToCenter = 50.0f;
 
     public bool IsCenter => _offset == Vector2.zero;
     public bool IsMovingToCenter { get; private set; }
 
     private Minimap _minimap;
     private Vector2 _offset;
-    [SerializeField] private float _moveSpeedByInputKey = 50.0f;
-    [SerializeField] private float _moveSpeedToCenter = 50.0f;
 
     private void Start()
     {
         RenderTexture renderTexture = _rawImage.texture as RenderTexture;
 
-        _minimap = Object.FindFirstObjectByType<MiniMapController>().Minimap;
+        _minimap = Object.FindFirstObjectByType<Minimap>();
         _minimap.Draw(renderTexture);
         _rawImage.material = _minimap.Material;
     }

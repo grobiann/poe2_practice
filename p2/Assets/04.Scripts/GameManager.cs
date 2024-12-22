@@ -1,8 +1,4 @@
-﻿using p2.Settings;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEditor.SceneManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,7 +22,7 @@ public class GameManager : MonoBehaviour
 
         PlayerCharacter player = UnityEngine.Object.FindFirstObjectByType<PlayerCharacter>();
 
-        Map map = new Map();
+        Map map = Object.FindFirstObjectByType<Map>();
         map.CreateNavMesh();
 
         CurrentGameMode = new GameMode(map);

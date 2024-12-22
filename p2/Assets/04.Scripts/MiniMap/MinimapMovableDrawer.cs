@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-namespace p2.Minimap
+namespace p2.mmap
 {
     public class MinimapMovableDrawer : IMovableDrawer
     {

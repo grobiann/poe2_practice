@@ -1,5 +1,4 @@
-﻿using p2.Minimap;
-using Unity.VisualScripting;
+﻿using p2.mmap;
 using UnityEngine;
 
 namespace p2.Settings.UI
@@ -37,7 +36,7 @@ namespace p2.Settings.UI
         {
             GameSettings.MapAttribute mapSettings = new GameSettings.MapAttribute();
             MinimapUiController minimapUiController = Object.FindFirstObjectByType<MinimapUiController>();
-            MiniMapController minimapController = Object.FindFirstObjectByType<MiniMapController>();
+            Minimap minimap = Object.FindFirstObjectByType<Minimap>();
 
             switch (option.ItemID)
             {
@@ -51,11 +50,11 @@ namespace p2.Settings.UI
                     break;
                 case ESettingItemID.Map_LandscapeOpacity:
                     mapSettings.LandscapeOpacity = ((IntSettingItem)option).Value;
-                    minimapController.Minimap.SetLandscapeOpacity(mapSettings.LandscapeOpacity / 255.0f);
+                    minimap.SetLandscapeOpacity(mapSettings.LandscapeOpacity / 255.0f);
                     break;
                 case ESettingItemID.Map_MapOpacity:
                     mapSettings.MapOpacity = ((IntSettingItem)option).Value;
-                    minimapController.Minimap.SetMapOpacity(mapSettings.MapOpacity / 255.0f);
+                    minimap.SetMapOpacity(mapSettings.MapOpacity / 255.0f);
                     break;
                 case ESettingItemID.Map_MinimapFOV:
                     mapSettings.MinimapFOV = ((IntSettingItem)option).Value;

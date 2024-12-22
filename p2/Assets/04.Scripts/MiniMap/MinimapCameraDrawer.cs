@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace p2.Minimap
+namespace p2.mmap
 {
-    public class MinimapCameraDrawer : MonoBehaviour, IEdgeDrawer, IMapObjectDrawer, IMovableDrawer
+    public class MinimapCameraDrawer : MonoBehaviour, IBorderDrawer, IMapObjectDrawer, IMovableDrawer
     {
         [SerializeField] private MeshRenderer _borderRenderer;
         [SerializeField] private MeshRenderer _movableRenderer;
@@ -13,7 +13,7 @@ namespace p2.Minimap
 
         private int _mapSize = 128;
 
-        public void DrawEdge(Texture2D texture)
+        public void DrawBorder(Texture2D texture)
         {
             _borderRenderer.gameObject.SetActive(true);
             _borderCamera.gameObject.SetActive(true);

@@ -1,7 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace p2.Minimap
+namespace p2.mmap
 {
     public interface IFogOfWarDrawer
     {
@@ -9,9 +8,9 @@ namespace p2.Minimap
         void Reveal(RenderTexture texture, Vector3 position);
     }
 
-    public interface IEdgeDrawer
+    public interface IBorderDrawer
     {
-        void DrawEdge(Texture2D texture);
+        void DrawBorder(Texture2D texture);
     }
 
     public interface IMovableDrawer
@@ -24,51 +23,41 @@ namespace p2.Minimap
         void DrawMapObjects(Texture2D texture);
     }
 
-    public class Minimap
+    public class MinimapDrawer
     {
         public Material Material { get; private set; }
         public float MapOpacity { get; private set; } = 0.5f;
         public float LandscapeOpacity { get; private set; } = 0.5f;
 
-        private const float TILE_SIZE = 1.0f;
-
+        private readonly int _textureSize;
         private readonly IFogOfWarDrawer _fogOfWarDrawer;
-        private readonly IEdgeDrawer _edgeDrawer;
+        private readonly IBorderDrawer _borderDrawer;
         private readonly IMovableDrawer _movableDrawer;
         private readonly IMapObjectDrawer _mapObjectDrawer;
 
         private Texture2D _mainTex;
         private RenderTexture _fogOfWarTex;
         private Texture2D _movableTex;
-        private readonly int _textureSize;
 
-        public Minimap(
-            Material mat,
+        public MinimapDrawer(
             int textureSize,
-            IEdgeDrawer edgeDrawer,
+            IBorderDrawer edgeDrawer,
             IFogOfWarDrawer fogOfWarDrawer,
             IMovableDrawer walkableDrawer,
             IMapObjectDrawer mapObjectDrawer)
         {
             _textureSize = textureSize;
-
             _fogOfWarDrawer = fogOfWarDrawer;
-            _edgeDrawer = edgeDrawer;
+            _borderDrawer = edgeDrawer;
             _movableDrawer = walkableDrawer;
             _mapObjectDrawer = mapObjectDrawer;
 
-            //_fogOfWarTex = new RenderTexture(_textureSize, _textureSize, 0, RenderTextureFormat.ARGB32);
-            //_fogOfWarTex.filterMode = FilterMode.Bilinear;
-            //_fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
-            //_fogOfWarTex.enableRandomWrite = true;
-            //_fogOfWarTex.Create();
-            _fogOfWarTex = mat.GetTexture("_FogTex") as RenderTexture;
-
-            //_fogOfWarTex = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
-            //_fogOfWarTex.filterMode = FilterMode.Bilinear;
-            //_fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
-            //_fogOfWarTex.Apply();
-
+            _fogOfWarTex = new RenderTexture(_textureSize, _textureSize, 0, RenderTextureFormat.ARGB32);
+            _fogOfWarTex.filterMode = FilterMode.Bilinear;
+            _fogOfWarTex.wrapMode = TextureWrapMode.Clamp;
+            _fogOfWarTex.enableRandomWrite = true;
+            _fogOfWarTex.Create();
+            
             _mainTex = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
             _mainTex.filterMode = FilterMode.Bilinear;
             _mainTex.wrapMode = TextureWrapMode.Clamp;
@@ -79,16 +68,15 @@ namespace p2.Minimap
             _movableTex.wrapMode = TextureWrapMode.Clamp;
             _movableTex.Apply();
 
-            //Material = new Material(Shader.Find("Unlit/FogOfWar"));
-            Material = mat;
-            //Material.SetTexture("_MainTex", _mainTex);
-            //Material.SetTexture("_FogBuffer", _fogOfWarTex);
+            Material = new Material(Shader.Find("Unlit/FogOfWar"));
+            Material.SetTexture("_MainTex", _mainTex);
+            Material.SetTexture("_FogTex", _fogOfWarTex);
             Material.SetTexture("_MovableTex", _movableTex);
         }
 
         public void Init()
         {
-            _edgeDrawer.DrawEdge(_mainTex);
+            _borderDrawer.DrawBorder(_mainTex);
             _mapObjectDrawer.DrawMapObjects(_mainTex);
             _fogOfWarDrawer.DrawFogOfWar(_fogOfWarTex);
             _movableDrawer.DrawMovable(_movableTex);
@@ -117,18 +105,6 @@ namespace p2.Minimap
         public void UpdateFogOfWar(Vector3 playerPosition)
         {
             _fogOfWarDrawer.Reveal(_fogOfWarTex, playerPosition);
-        }
-
-        public Rect ExtractRect(Vector3 position, float worldWidth, float worldHeight)
-        {
-            float mapSize = 128;
-            float divider = 1 / mapSize / TILE_SIZE;
-            float minx = (position.x - worldWidth * 0.5f) * divider;
-            float miny = (position.z - worldHeight * 0.5f) * divider;
-            float width = worldWidth * divider;
-            float height = worldHeight * divider;
-
-            return new Rect(minx, miny, width, height);
         }
     }
 }
