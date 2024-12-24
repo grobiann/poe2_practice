@@ -5,6 +5,8 @@ namespace p2.mmap
 {
     public class FogDrawer : MonoBehaviour, IFogOfWarDrawer
     {
+        public float RevealRadius => _revealRadius;
+
         [SerializeField] private ComputeShader _fogShader;
         [SerializeField] private float _revealRadius = 10.0f;
         [SerializeField] private float _edgeSharpness = 3f;

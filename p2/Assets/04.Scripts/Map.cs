@@ -1,4 +1,5 @@
-﻿using Unity.AI.Navigation;
+﻿using NUnit.Framework;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class Map : MonoBehaviour

@@ -1,5 +1,6 @@
 ﻿using p2.mmap;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,16 @@ public class UI_MinimapFull : MonoBehaviour
     [SerializeField] private float _moveSpeedByInputKey = 50.0f;
     [SerializeField] private float _moveSpeedToCenter = 50.0f;
 
+    [Header("Icon")]
+    [SerializeField] private Transform _iconParent;
+    [SerializeField] private UI_MinimapIcon _iconPrefab;
+
     public bool IsCenter => _offset == Vector2.zero;
     public bool IsMovingToCenter { get; private set; }
 
     private Minimap _minimap;
     private Vector2 _offset;
+    private List<UI_MinimapIcon> _icons;
 
     private void Start()
     {
@@ -22,7 +28,17 @@ public class UI_MinimapFull : MonoBehaviour
         _minimap = Object.FindFirstObjectByType<Minimap>();
         _minimap.Draw(renderTexture);
         _rawImage.material = _minimap.Material;
+
+        _icons = new List<UI_MinimapIcon>();
+        _minimap.icons.ForEach(attribute =>
+        {   
+            UI_MinimapIcon icon = Instantiate(_iconPrefab, _iconParent);
+            icon.SetAttribute(attribute);
+            ((RectTransform)icon.transform).anchoredPosition = ((RectTransform)_iconParent).UvToPosition(attribute.uv);
+            _icons.Add(icon);
+        });
     }
+
 
     private void OnEnable()
     {
@@ -54,12 +70,18 @@ public class UI_MinimapFull : MonoBehaviour
 
         // Makes the player's position centered on the screen.
         Vector3 playerPosition = GameManager.Instance.CurrentGameMode.MyPlayerCharacter.transform.position;
-        Rect uvRect = _minimap.ExtractRect(playerPosition, 0, 0);
-        Vector2 centerOffsetUV = new Vector2(0.5f, 0.5f) - uvRect.center;
+        Vector2 playerUV = _minimap.WorldPositonToUV(playerPosition);
+        Vector2 centerOffsetUV = new Vector2(0.5f, 0.5f) - playerUV;
 
         RectTransform rectTransform = (RectTransform)transform;
         Vector2 rectSize = rectTransform.sizeDelta;
         rectTransform.anchoredPosition = centerOffsetUV * rectSize + _offset;
+
+        // Update Icon
+        foreach (UI_MinimapIcon icon in _icons)
+        {
+            icon.Refresh();
+        }
     }
 
     public void MoveToCenter()

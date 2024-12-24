@@ -6,4 +6,11 @@ public static class TransformExtensions
     {
         return new Vector2(worldPosition.x, worldPosition.z);
     }
+
+    public static Vector2 UvToPosition(this RectTransform parent, Vector2 uv)
+    {
+        Vector2 size = parent.sizeDelta;
+        Vector2 position = new Vector2(uv.x * size.x, uv.y * size.y);
+        return position;
+    }
 }
